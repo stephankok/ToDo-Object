@@ -30,13 +30,13 @@ import java.util.ArrayList;
  */
 public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
-    Context context;           // Activity to display the adapter
-    int picture;              // The ID of the picture to add
+    Context context;                // Activity to display the adapter
+    int picture;                    // The ID of the picture to add
     ArrayList<String> itemOnList;   // Items of the to do list
-    Boolean fileSaving;        // Set true to save items on STORETEXT
+    Boolean fileSaving;             // Set true to save items on STORETEXT
 
     /**
-     * Initialize
+     * Initialize MMyOwnRowAdapter
      */
     public MyOwnRowAdapter(Context contextOfApp, int pictureOfAllItems, ArrayList<String> itemsOfToDoList, Boolean saveOnFile){
         super(contextOfApp, R.layout.single_row_layout, itemsOfToDoList);
@@ -76,7 +76,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
             @Override
             public boolean onLongClick(View view) {
                 // make anousment
-                String text = "You deleted: " + name;
+                String text = context.getString(R.string.youDeleted) + name;
 
                 // make popup
                 Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
@@ -88,9 +88,6 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
                 // update listview
                 notifyDataSetChanged();
 
-                if(fileSaving){
-                    updateAllData();
-                }
                 return true;
             }
         };
@@ -101,18 +98,16 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
     }
 
     /**
-     * Add item to list.
-     * Save on file.
+     * When you update the data also save them on File.
      */
-    public void add(String itemToAdd){
-        super.add(itemToAdd);
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
 
         // save on file
         if(fileSaving){
             updateAllData();
         }
     }
-
 
     /**
      * When fileSaving is set true, this function will be called.

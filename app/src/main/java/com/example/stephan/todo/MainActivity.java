@@ -12,8 +12,9 @@ import java.util.Scanner;
 
 /**
  * A To Do app created by Stephan Kok.
- *
- *
+ * It will create items with an own created adapter MyOwnRowAdapter.
+ * You can add items by pressing the button and you can delete items by longclicking on it.
+ * It will save all your items on a file so you wont lose them!
  */
 public class MainActivity extends AppCompatActivity {
 

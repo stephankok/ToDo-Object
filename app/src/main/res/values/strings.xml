@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">To Do</string>
+    <string name="newItemToDo">Write a item To Do</string>
+    <string name="addButton">Add</string>
+    <string name="ToDoListViewInfo">To do list:</string>
+    <string name="deleteInfo">Delete an item by long pressing it.</string>
+    <string name="youDeleted">"You deleted: "</string>
 </resources>
