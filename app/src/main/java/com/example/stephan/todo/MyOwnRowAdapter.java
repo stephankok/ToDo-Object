@@ -1,6 +1,9 @@
 package com.example.stephan.todo;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +21,9 @@ import java.util.ArrayList;
  *  set false to disable
  *
  *  Input:
- *  Picture give the id of the picture u want to add.
  *  an ArrayList<String> of items to add. You can dynamically add or remove.
  *
  *  Your layout wil need:
- *  ImageView with id: imageView
  *  TextView with id: nameTextView
  *
  *  Features:
@@ -31,18 +32,16 @@ import java.util.ArrayList;
 public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
     Context context;                // Activity to display the adapter
-    int picture;                    // The ID of the picture to add
     ArrayList<String> itemOnList;   // Items of the to do list
     Boolean fileSaving;             // Set true to save items on STORETEXT
 
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnRowAdapter(Context contextOfApp, int pictureOfAllItems, ArrayList<String> itemsOfToDoList, Boolean saveOnFile){
+    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile){
         super(contextOfApp, R.layout.single_row_layout, itemsOfToDoList);
 
         context = contextOfApp;
-        picture = pictureOfAllItems;
         itemOnList = itemsOfToDoList;
         fileSaving = saveOnFile;
     }
@@ -59,20 +58,17 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         }
 
         // find Views on ListView
-        final ImageView imageview = (ImageView) view.findViewById(R.id.imageView);
         final TextView textview = (TextView) view.findViewById(R.id.nameTextView);
 
         // add values to Views
         final String name = itemOnList.get(position);
-        int pictures = picture;
 
-
+        // set text on textview
         textview.setText(name);
-        imageview.setImageResource(pictures);
-
 
         // The longClickListener
-        View.OnLongClickListener listener1 = new View.OnLongClickListener(){
+        View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
+
             @Override
             public boolean onLongClick(View view) {
                 // make anousment
@@ -92,7 +88,20 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
             }
         };
 
-        view.setOnLongClickListener(listener1);
+        View.OnClickListener shortlistener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(textview.getTextColors() == ColorStateList.valueOf(Color.GREEN)){
+                    textview.setTextColor(Color.BLACK);
+                }
+                else {
+                    textview.setTextColor(Color.GREEN);
+                }
+            }
+        };
+
+        view.setOnLongClickListener(longclicklistener);
+        view.setOnClickListener(shortlistener);
 
         return view;
     }

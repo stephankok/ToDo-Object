@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="paddingListViewText">20dp</dimen>
+    <dimen name="textSizeToDoListItems">18sp</dimen>
+    <dimen name="imageSizeToDoListItems">20dp</dimen>
+    <dimen name="textSizeToDo">25sp</dimen>
+    <dimen name="paddingListView">5dp</dimen>
 </resources>

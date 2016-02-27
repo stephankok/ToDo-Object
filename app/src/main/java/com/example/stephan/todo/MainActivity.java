@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Initialize values.
     EditText addItemToList;
-    int picture;
     ArrayList<String> itemsOnList = new ArrayList<String>();
     ListView listView;
     MyOwnRowAdapter myadepter;
@@ -40,14 +39,11 @@ public class MainActivity extends AppCompatActivity {
         addItemToList = (EditText) findViewById(R.id.addItemEditText);
         listView = (ListView) findViewById(R.id.listView);
 
-        // select picture
-        picture = R.drawable.rondje;
-
         // read a file and add it to itemsOnList.
         readDataFromFile(itemsOnList);
 
         // make adapter
-        myadepter = new MyOwnRowAdapter(this, picture, itemsOnList, saveDataOnFile);
+        myadepter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile);
 
         // add adapter to listview
         listView.setAdapter(myadepter);
@@ -66,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             addItemToList.setText("");
 
             // add item
-            myadepter.add(itemToAdd);
+            myadepter.insert(itemToAdd,0);
 
             // update adapter and listView.
             myadepter.notifyDataSetChanged();
@@ -87,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     placeReadedData.add(line);
                 }
             }
+            scan.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
