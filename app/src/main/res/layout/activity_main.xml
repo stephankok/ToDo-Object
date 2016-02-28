@@ -10,6 +10,13 @@
     tools:context="com.example.stephan.todo.MainActivity"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:text="@string/deleteInfo"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -46,13 +53,6 @@
         android:textSize="@dimen/textSizeToDo"
         android:textStyle="bold"
         android:textColor="@android:color/black"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="italic"
-        android:text="@string/deleteInfo"/>
 
     <ListView
         android:layout_width="wrap_content"

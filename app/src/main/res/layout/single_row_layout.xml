@@ -8,15 +8,11 @@
     android:paddingRight="@dimen/paddingListView"
     android:paddingTop="@dimen/paddingListView">
 
-
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/textSizeToDoListItems"
         android:id="@+id/nameTextView"
         android:textColor="@android:color/black"/>
-
-
 
 </LinearLayout>
