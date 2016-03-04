@@ -34,7 +34,8 @@ public class ToDoActivity extends AppCompatActivity {
     MyOwnRowAdapter myadepter;                                 // Make adapter
     Boolean saveDataOnFile = true;                             // Ensure data is saved
     ArrayList<Integer> colorData = new ArrayList<Integer>();   // Save the color of To Do list items
-    String fileName;                                    // file where items are stored
+    String listName;                                    // list name
+    String fileSaveLocation;                            // where the items are stored
 
 
     /**
@@ -56,16 +57,17 @@ public class ToDoActivity extends AppCompatActivity {
         // get filename to save and load, if not exist give error
         try {
             // get filename
-            fileName = getIntent().getExtras().getString("fileName");
+            listName = getIntent().getExtras().getString("listName");
+            fileSaveLocation = getIntent().getExtras().getString("fileSaveLocation");
 
             // set name of this list
-            nameOfThisList.setText(fileName);
+            nameOfThisList.setText(listName);
 
             // read a file and add it to itemsOnList an colorData
-            readDataFromFile(itemsOnList, colorData, fileName);
+            readDataFromFile(itemsOnList, colorData, fileSaveLocation);
 
             // make adapter
-            myadepter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile, colorData, fileName);
+            myadepter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile, colorData, fileSaveLocation);
 
             // add adapter to listview
             listView.setAdapter(myadepter);
@@ -86,9 +88,6 @@ public class ToDoActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.actionbar, menu);
-
-        MenuItem filename = menu.findItem(R.id.edit);
-        filename.setVisible(false);
 
         // Make a back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

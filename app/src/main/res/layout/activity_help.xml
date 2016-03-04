@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thanks for using my app\n\nOpen list\n\nDelete list\n\nClear list\n\nDelete item\n\nMake item green\n\nEdit items\lists"
+        android:text="Thanks for using my app\n\nOpen list\n\nDelete list\n\nClear list\n\nDelete item\n\nMake item green\n\nEdit items\lists\n\nUNDER CONSTRUCTION"
         android:textSize="20sp"
         android:textStyle="bold"/>
 

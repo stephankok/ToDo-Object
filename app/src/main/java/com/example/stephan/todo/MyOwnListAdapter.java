@@ -124,7 +124,8 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // add the name of the file, so you will now what file to load.
                 Bundle extras = new Bundle();
-                extras.putString("fileName", fileSaveLocation.get(position));
+                extras.putString("listName", name);
+                extras.putString("fileSaveLocation", fileSaveLocation.get(position));
                 loadItems.putExtras(extras);
 
                 // start

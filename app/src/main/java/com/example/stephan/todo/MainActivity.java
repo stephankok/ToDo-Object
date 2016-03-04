@@ -90,9 +90,6 @@ public class MainActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
 
         switch (item.getItemId()){
-            case R.id.edit:
-                setEditOnOrOff();
-                return true;
             case R.id.help:
                 Intent helpWindow = new Intent(this, HelpActivity.class);
                 startActivity(helpWindow);
