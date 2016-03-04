@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textStyle="italic"
-        android:text="@string/deleteInfo"/>
+        android:text="Press on an item to go to open it.\n Longpress on an item to delete it"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/newItemToDo"
+            android:hint="New To Do list"
             android:id="@+id/addItemEditText"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
@@ -47,7 +47,7 @@
     </RelativeLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/ToDoListViewInfo"
         android:textSize="@dimen/textSizeToDo"
@@ -55,9 +55,11 @@
         android:textColor="@android:color/black"/>
 
     <ListView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView">
+        android:id="@+id/listView"
+        android:focusable="false"
+        android:descendantFocusability="afterDescendants">
     </ListView>
 
 

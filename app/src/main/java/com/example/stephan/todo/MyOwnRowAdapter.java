@@ -3,12 +3,10 @@ package com.example.stephan.todo;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.PrintStream;
@@ -44,17 +42,19 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
     ArrayList<String> itemOnList;   // Items of the to do list
     Boolean fileSaving;             // Set true to save items on STORETEXT
     ArrayList<Integer> itemColor;   // color of the items
+    String fileToSaveAndLoad;
 
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile, ArrayList<Integer> colorData){
-        super(contextOfApp, R.layout.single_row_layout, itemsOfToDoList);
+    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile, ArrayList<Integer> colorData, String fileName){
+        super(contextOfApp, R.layout.single_row_items_layout, itemsOfToDoList);
 
         context = contextOfApp;
         itemOnList = itemsOfToDoList;
         fileSaving = saveOnFile;
         itemColor = colorData;
+        fileToSaveAndLoad = fileName;
     }
 
     /**
@@ -67,7 +67,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
     public View getView(final int position, View view, ViewGroup parent){
         if(view == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.single_row_layout, parent, false);
+            view = inflater.inflate(R.layout.single_row_items_layout, parent, false);
         }
 
         // find Views on ListView
@@ -165,6 +165,12 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         }
     }
 
+    public void clearlist(){
+        itemColor.clear();
+        itemOnList.clear();
+    }
+
+
     /**
      * When fileSaving is set true, this function will be called.
      * It will open/create a file STORETEXT.
@@ -178,7 +184,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
     public void updateAllData(){
         try {
             // open/create
-            PrintStream out = new PrintStream(context.getApplicationContext().openFileOutput("STORETEXT",context.MODE_PRIVATE));
+            PrintStream out = new PrintStream(context.getApplicationContext().openFileOutput(fileToSaveAndLoad,context.MODE_PRIVATE));
 
             // add all items
             for( int i = 0; i < itemOnList.size(); i++){

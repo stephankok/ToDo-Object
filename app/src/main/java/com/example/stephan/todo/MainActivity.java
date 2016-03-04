@@ -1,33 +1,44 @@
 package com.example.stephan.todo;
 
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 
 /**
  * A To Do app created by Stephan Kok.
- * It will create items with an own created adapter MyOwnRowAdapter.
- * You can add items by pressing the button and you can delete items by longclicking on it.
- * Feature: You can make items green by pressing them
- * It will save all your items on a file so you wont lose them! Data is saved per line,
- * so make sure users cannot enter a new line.
+ *
+ * This is the main activity here you will be able to create lists. For this MyOwnListAdapter is
+ * used.
+ * You can delete items by longpressing them. You will get a warning first.
+ * It will save all data in PARENTFILE000001
+ *
  */
 public class MainActivity extends AppCompatActivity {
 
     // Initialize values.
     EditText addItemToList;                                    // Get To Do from user
     ArrayList<String> itemsOnList = new ArrayList<String>();   // Save all items of To Do List
+    ArrayList<String> timeList = new ArrayList<String>();   // Save all items of To Do List
     ListView listView;                                         // Place adapter here
-    MyOwnRowAdapter myadepter;                                 // Make adapter
-    Boolean saveDataOnFile = true;                             // Ensure data is saved
-    ArrayList<Integer> colorData = new ArrayList<Integer>();   // Save the color of To Do list items
+    MyOwnListAdapter myadepter;                                 // Make adapter
+    String fileName = "PARENTFILE";                        // main save file // 000001
+    Integer fileAmount;
+    Calendar time;                                               // geth the time
+    Boolean editable = false;                                    // check wether u are in edit mode or not
 
     /**
      * Called on create.
@@ -39,19 +50,66 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // stop keyboard from popping up
+//        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         // find elements
         addItemToList = (EditText) findViewById(R.id.addItemEditText);
         listView = (ListView) findViewById(R.id.listView);
 
         // read a file and add it to itemsOnList an colorData
-        readDataFromFile(itemsOnList, colorData);
+        fileAmount = 0;
+        readDataFromFile();
 
         // make adapter
-        myadepter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile, colorData);
+        myadepter = new MyOwnListAdapter(this, itemsOnList, fileName, fileAmount, timeList);
 
         // add adapter to listview
         listView.setAdapter(myadepter);
+
+        // When editting inside listview, the EditText loses focusablity. This was the fix.
+        listView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+
     }
+
+
+    // menu button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.actionbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()){
+            case R.id.edit:
+                setEditOnOrOff();
+                return true;
+            case R.id.help:
+                Intent helpWindow = new Intent(this, HelpActivity.class);
+                startActivity(helpWindow);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void setEditOnOrOff(){
+        if(editable){
+            listView.setAdapter(myadepter);
+            editable = false;
+        }
+        else {
+            Toast.makeText(MainActivity.this, "You now enabled editting", Toast.LENGTH_SHORT).show();
+            MyOwnEditAdapter myEditAdepter = new MyOwnEditAdapter(this, itemsOnList, fileName, fileAmount);
+            listView.setAdapter(myEditAdepter);
+            editable = true;
+        }
+    }
+
 
     /**
      * Is called when ADD button is clicked.
@@ -61,15 +119,16 @@ public class MainActivity extends AppCompatActivity {
 
         // get item to add
         String itemToAdd = addItemToList.getText().toString();
-        if(!itemToAdd.isEmpty()) {
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = df.format(time.getInstance().getTime());
+
+        if (!itemToAdd.isEmpty()) {
             // make it empty
             addItemToList.setText("");
 
             // add item
-            myadepter.insert(itemToAdd, 0);
-
-            // add color
-            myadepter.insertColor();
+            myadepter.itemOnList.add(0,itemToAdd);
+            myadepter.timeList.add(0,formattedDate);
 
             // update adapter and listView.
             myadepter.notifyDataSetChanged();
@@ -80,23 +139,23 @@ public class MainActivity extends AppCompatActivity {
      * !WARNING Reads all data from STORETEXT. Read apdapter to see how saving works.
      * Get all data in file and add them to placeReadedData.
      */
-    public void readDataFromFile(ArrayList<String> placeReadedData, ArrayList<Integer> placeColorData ){
+    public void readDataFromFile() {
+        itemsOnList.clear();
         try {
             // Open File
-            Scanner scan = new Scanner(openFileInput("STORETEXT"));
+            Scanner scan = new Scanner(openFileInput(fileName));
 
-            // Find all To Do items
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
 
                 // If this line is found you will get color id's
-                if(line.compareTo("END OF THE ITEMS NOW COLORS. code:182838") == 0){
+                if (line.compareTo("Done Now Time") == 0) {
                     break;
                 }
 
                 // if line is not empty it is data, add it.
-                if (!line.isEmpty()){
-                    placeReadedData.add(line);
+                if (!line.isEmpty()) {
+                    itemsOnList.add(line);
                 }
             }
 
@@ -104,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
 
-                if (!line.isEmpty()){
-                    placeColorData.add(Integer.parseInt(line));
+                if (!line.isEmpty()) {
+                    timeList.add(line);
                 }
             }
 
@@ -115,5 +174,4 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 }

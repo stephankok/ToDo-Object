@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">To Do</string>
-    <string name="newItemToDo">Write an item To Do</string>
+    <string name="newItemToDo">Write a new To Do item</string>
     <string name="addButton">Add</string>
     <string name="ToDoListViewInfo">To do list:</string>
     <string name="deleteInfo">Delete an item by pressing it long. \nYou can make an item green by pressing it.</string>
