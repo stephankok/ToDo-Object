@@ -1,6 +1,7 @@
 package com.example.stephan.todo;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -49,11 +51,15 @@ public class ToDoActivity extends AppCompatActivity {
         // find elements
         addItemToList = (EditText) findViewById(R.id.addItemEditText);
         listView = (ListView) findViewById(R.id.listView);
+        TextView nameOfThisList = (TextView) findViewById(R.id.nameOfThisList);
 
         // get filename to save and load, if not exist give error
         try {
             // get filename
             fileName = getIntent().getExtras().getString("fileName");
+
+            // set name of this list
+            nameOfThisList.setText(fileName);
 
             // read a file and add it to itemsOnList an colorData
             readDataFromFile(itemsOnList, colorData, fileName);
@@ -80,6 +86,9 @@ public class ToDoActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.actionbar, menu);
+
+        MenuItem filename = menu.findItem(R.id.edit);
+        filename.setVisible(false);
 
         // Make a back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -174,7 +183,7 @@ public class ToDoActivity extends AppCompatActivity {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
         alertDialogBuilder.setTitle("Confirm delete");
-        alertDialogBuilder.setMessage("Are you sure you want to clear this list?")
+        alertDialogBuilder.setMessage("Are you sure you want to delete all the items in this list?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override

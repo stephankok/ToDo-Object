@@ -1,6 +1,8 @@
 package com.example.stephan.todo;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -97,15 +100,72 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set edditing on or of.
+     * It will make a new adapter to put on the listview.
+     * It will have a alertdialog to get the rename data from the user, then it will save the file
+     * and reload the previous adapter with the new data.
+     */
     public void setEditOnOrOff(){
+        // reset old adapter
         if(editable){
+            // announcement
+            Toast.makeText(MainActivity.this, "You now disabled editing", Toast.LENGTH_SHORT).show();
+
+            // restore
             listView.setAdapter(myadepter);
+
+            // editting mode is disabled
             editable = false;
         }
+        // make new adapter and alertdialag when item clicked
         else {
-            Toast.makeText(MainActivity.this, "You now enabled editting", Toast.LENGTH_SHORT).show();
-            MyOwnEditAdapter myEditAdepter = new MyOwnEditAdapter(this, itemsOnList, fileName, fileAmount);
+            // announcement
+            Toast.makeText(MainActivity.this, "You now enabled editing", Toast.LENGTH_SHORT).show();
+
+            // load new adapter to edit
+            final MyOwnEditAdapter myEditAdepter = new MyOwnEditAdapter(this, itemsOnList, fileName, fileAmount, timeList);
             listView.setAdapter(myEditAdepter);
+
+            // set onitemclick
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                    // create dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    // set info
+                    builder.setTitle("Rename")
+                    .setMessage("What will be the new name for: " + myEditAdepter.itemOnList.get(position) + "?");
+
+                    // make user able to give new name
+                    final EditText input = new EditText(MainActivity.this);
+                    builder.setView(input);
+
+                    // Set up the buttons
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(MainActivity.this, "you changed it to " +  input.getText(), Toast.LENGTH_SHORT).show();
+                            myEditAdepter.itemOnList.set(position, input.getText().toString());
+                            myEditAdepter.notifyDataSetChanged();
+
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    // show dialog
+                    builder.show();
+                }
+            });
+
+            // editting mode is enabled
             editable = true;
         }
     }

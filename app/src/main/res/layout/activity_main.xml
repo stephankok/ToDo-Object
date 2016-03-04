@@ -49,7 +49,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ToDoListViewInfo"
+        android:text="@string/infoTextLists"
         android:textSize="@dimen/textSizeToDo"
         android:textStyle="bold"
         android:textColor="@android:color/black"/>

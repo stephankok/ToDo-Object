@@ -2,9 +2,9 @@
     <string name="app_name">To Do</string>
     <string name="newItemToDo">Write a new To Do item</string>
     <string name="addButton">Add</string>
-    <string name="ToDoListViewInfo">To do list:</string>
     <string name="deleteInfo">Delete an item by pressing it long. \nYou can make an item green by pressing it.</string>
     <string name="youDeleted">"You deleted: "</string>
-    <string name="EMColorsAdapter">An Error Occurred with the colors, please reinstall or delete buffer</string>
     <string name="standardError">"An Error Occurred: "</string>
+    <string name="infoTextItems">To Do items:</string>
+    <string name="infoTextLists">To Do lists:</string>
 </resources>

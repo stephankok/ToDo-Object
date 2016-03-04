@@ -72,7 +72,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                 // Create a warning
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm delete");
-                alertDialogBuilder.setMessage("Are you sure you want to delete this entire list?")
+                alertDialogBuilder.setMessage("Are you sure you want to delete: " + name + "?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -94,7 +94,8 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // If you didnt want to delete it do nothing
+                                // end it
+                                dialog.cancel();
                             }
                         });
 

@@ -78,13 +78,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
         // set text on textview
         textview.setText(name);
-        try{
-            textview.setTextColor(itemColor.get(position));
-        }catch (Throwable t) {
-            // error happened.
-            t.printStackTrace();
-            Toast.makeText(context, R.string.EMColorsAdapter, Toast.LENGTH_SHORT).show();
-        }
+        textview.setTextColor(itemColor.get(position));
 
         // The longClickListener, delete items
         View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
@@ -99,14 +93,8 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
                 // delete item
                 itemOnList.remove(position);
+                itemColor.remove(position);
 
-                try{
-                    itemColor.remove(position);
-                }catch (Throwable t) {
-                    // error happened.
-                    t.printStackTrace();
-                    Toast.makeText(context, R.string.EMColorsAdapter, Toast.LENGTH_LONG).show();
-                }
 
                 // update listview
                 notifyDataSetChanged();
