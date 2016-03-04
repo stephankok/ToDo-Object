@@ -24,17 +24,14 @@ public class MyOwnEditAdapter extends ArrayAdapter<String> {
     ArrayList<String> itemOnList;   // Items of the to do list
     String fileToSaveAndLoad;       // Store data here
     ArrayList<String> timeList;     // Store the data of when the list is added
-    Integer fileAmount;
-
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnEditAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, String fileName, Integer amountOfFiles, ArrayList<String> currentTime){
+    public MyOwnEditAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, String fileName, ArrayList<String> currentTime){
         super(contextOfApp, R.layout.single_row_lists_layout, itemsOfToDoList);
         context = contextOfApp;
         itemOnList = itemsOfToDoList;
         fileToSaveAndLoad = fileName;
-        fileAmount = amountOfFiles;
         timeList = currentTime;
     }
 

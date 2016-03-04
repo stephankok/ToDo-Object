@@ -28,19 +28,24 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
     ArrayList<String> itemOnList;   // Items of the to do list
     String fileToSaveAndLoad;       // Store data here
     ArrayList<String> timeList;     // Store the data of when the list is added
-    Integer fileAmount;
+    ArrayList<String> fileSaveLocation;
+    String fileCounter;
 
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnListAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, String fileName, Integer amountOfFiles, ArrayList<String> currentTime){
+    public MyOwnListAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList,
+                            String fileName,
+                            ArrayList<String> currentTime, ArrayList<String> fileNameList,
+                            String fileRecord){
         super(contextOfApp, R.layout.single_row_lists_layout, itemsOfToDoList);
 
         context = contextOfApp;
         itemOnList = itemsOfToDoList;
         fileToSaveAndLoad = fileName;
-        fileAmount = amountOfFiles;
         timeList = currentTime;
+        fileSaveLocation = fileNameList;
+        fileCounter = fileRecord;
     }
 
     /**
@@ -86,7 +91,9 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                                 // delete item
                                 itemOnList.remove(position);
                                 // delete file
-                                context.deleteFile(name);
+                                context.deleteFile(fileSaveLocation.get(position));
+                                fileSaveLocation.remove(position);
+                                timeList.remove(position);
                                 // update listview
                                 notifyDataSetChanged();
                             }
@@ -117,7 +124,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // add the name of the file, so you will now what file to load.
                 Bundle extras = new Bundle();
-                extras.putString("fileName", name);
+                extras.putString("fileName", fileSaveLocation.get(position));
                 loadItems.putExtras(extras);
 
                 // start
@@ -154,6 +161,9 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
             // open/create
             PrintStream out = new PrintStream(context.getApplicationContext().openFileOutput(fileToSaveAndLoad,context.MODE_PRIVATE));
 
+            // first print the file recorder.
+            out.println(fileCounter);
+
             // add all lists
             for( int i = 0; i < itemOnList.size(); i++){
                 out.println(itemOnList.get(i) + "\n");
@@ -165,6 +175,13 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
             // add all listdata
             for( int i = 0; i < timeList.size(); i++){
                 out.println(timeList.get(i) + "\n");
+            }
+
+            // write serparation line
+            out.println("Done Now FileSaveLocations");
+
+            for(int i = 0; i < fileSaveLocation.size(); i++){
+                out.println(fileSaveLocation.get(i) + "\n");
             }
 
             // close file

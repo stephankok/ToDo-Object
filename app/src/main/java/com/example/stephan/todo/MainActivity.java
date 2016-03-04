@@ -6,11 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,7 +27,7 @@ import java.util.Scanner;
  * This is the main activity here you will be able to create lists. For this MyOwnListAdapter is
  * used.
  * You can delete items by longpressing them. You will get a warning first.
- * It will save all data in PARENTFILE000001
+ * It will save all data in PARENTFILE
  *
  */
 public class MainActivity extends AppCompatActivity {
@@ -36,10 +36,11 @@ public class MainActivity extends AppCompatActivity {
     EditText addItemToList;                                    // Get To Do from user
     ArrayList<String> itemsOnList = new ArrayList<String>();   // Save all items of To Do List
     ArrayList<String> timeList = new ArrayList<String>();   // Save all items of To Do List
+    ArrayList<String> fileNameList = new ArrayList<String>(); // save all filenames
+    String fileCounter;                                         // keep track of files used
     ListView listView;                                         // Place adapter here
     MyOwnListAdapter myadepter;                                 // Make adapter
-    String fileName = "PARENTFILE";                        // main save file // 000001
-    Integer fileAmount;
+    String fileName = "PARENTFILE";                        // main save file
     Calendar time;                                               // geth the time
     Boolean editable = false;                                    // check wether u are in edit mode or not
 
@@ -61,11 +62,12 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
 
         // read a file and add it to itemsOnList an colorData
-        fileAmount = 0;
+        fileCounter = String.format("%010d",0);
+        Log.v("fileCounter", fileCounter);
         readDataFromFile();
 
         // make adapter
-        myadepter = new MyOwnListAdapter(this, itemsOnList, fileName, fileAmount, timeList);
+        myadepter = new MyOwnListAdapter(this, itemsOnList, fileName, timeList, fileNameList, fileCounter);
 
         // add adapter to listview
         listView.setAdapter(myadepter);
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "You now enabled editing", Toast.LENGTH_SHORT).show();
 
             // load new adapter to edit
-            final MyOwnEditAdapter myEditAdepter = new MyOwnEditAdapter(this, itemsOnList, fileName, fileAmount, timeList);
+            final MyOwnEditAdapter myEditAdepter = new MyOwnEditAdapter(this, itemsOnList, fileName, timeList);
             listView.setAdapter(myEditAdepter);
 
             // set onitemclick
@@ -179,19 +181,29 @@ public class MainActivity extends AppCompatActivity {
 
         // get item to add
         String itemToAdd = addItemToList.getText().toString();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        String formattedDate = df.format(time.getInstance().getTime());
 
         if (!itemToAdd.isEmpty()) {
-            // make it empty
-            addItemToList.setText("");
+            // get date
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            String formattedDate = df.format(time.getInstance().getTime());
+
+            // make fileSaveLocation
+            Integer fileCount = Integer.parseInt(myadepter.fileCounter) + 1;
+            String fileNumber = String.format("%010d", fileCount);
+
+            Log.v("FileCounterUpdate", fileNumber);
 
             // add item
             myadepter.itemOnList.add(0,itemToAdd);
             myadepter.timeList.add(0,formattedDate);
+            myadepter.fileSaveLocation.add(0,fileNumber);
+            myadepter.fileCounter = fileNumber;
 
             // update adapter and listView.
             myadepter.notifyDataSetChanged();
+
+            // make it empty
+            addItemToList.setText("");
         }
     }
 
@@ -204,6 +216,15 @@ public class MainActivity extends AppCompatActivity {
         try {
             // Open File
             Scanner scan = new Scanner(openFileInput(fileName));
+
+            // first get the filecounter
+            while(scan.hasNextLine()){
+                String line = scan.nextLine();
+                if(!line.isEmpty()){
+                    fileCounter = line;
+                    break;
+                }
+            }
 
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
@@ -223,8 +244,21 @@ public class MainActivity extends AppCompatActivity {
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
 
+                if (line.compareTo("Done Now FileSaveLocations") == 0) {
+                    break;
+                }
+
                 if (!line.isEmpty()) {
                     timeList.add(line);
+                }
+            }
+
+            // Now find all Filesavelocations
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+
+                if (!line.isEmpty()) {
+                    fileNameList.add(line);
                 }
             }
 
