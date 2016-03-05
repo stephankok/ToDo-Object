@@ -1,12 +1,16 @@
 package com.example.stephan.todo;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.PrintStream;
@@ -72,6 +76,8 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
         // find Views on ListView
         final TextView textview = (TextView) view.findViewById(R.id.nameTextView);
+        final ImageButton imageDeleteButton = (ImageButton)
+                view.findViewById(R.id.deleteButton);
 
         // add values to Views
         final String name = itemOnList.get(position);
@@ -80,25 +86,83 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         textview.setText(name);
         textview.setTextColor(itemColor.get(position));
 
+
+        imageDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create a warning
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Confirm delete");
+                alertDialogBuilder.setMessage("Are you sure you want to delete: " + name + "?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // If you wanted to delete it, delete it
+
+                                // make message
+                                String text = context.getString(R.string.youDeleted) + name;
+                                // make popup
+                                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                                // delete item
+                                itemOnList.remove(position);
+                                // update listview
+                                notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // end it
+                                dialog.cancel();
+                            }
+                        });
+
+                // make warning
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show warning
+                alertDialog.show();
+            }
+        });
+
         // The longClickListener, delete items
         View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
 
             @Override
             public boolean onLongClick(View view) {
-                // make announcement
-                String text = context.getString(R.string.youDeleted) + name;
 
-                // make popup
-                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                // create dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                // delete item
-                itemOnList.remove(position);
-                itemColor.remove(position);
+                // set info
+                builder.setTitle("Rename")
+                        .setMessage("What will be the new name for: " + itemOnList.get(position) + "?");
 
+                // make user able to give new name
+                final EditText input = new EditText(context);
+                input.setText(itemOnList.get(position));
+                builder.setView(input);
 
-                // update listview
-                notifyDataSetChanged();
+                // Set up the buttons
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "you changed it to " + input.getText(), Toast.LENGTH_SHORT).show();
+                        itemOnList.set(position, input.getText().toString());
+                        notifyDataSetChanged();
 
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                // show dialog
+                builder.show();;
                 return true;
             }
         };

@@ -13,6 +13,18 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/textSizeToDoListItems"
         android:id="@+id/nameTextView"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:layout_weight="1"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:id="@+id/deleteButton"
+        android:src="@drawable/delete_icon"
+        android:background="@android:color/transparent"
+        />
 
 </LinearLayout>

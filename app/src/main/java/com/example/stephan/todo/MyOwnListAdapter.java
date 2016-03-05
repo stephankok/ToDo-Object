@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.PrintStream;
@@ -60,6 +62,8 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
         // find Views on ListView
         final TextView textview = (TextView) view.findViewById(R.id.nameTextView);
         final TextView timetextview = (TextView) view.findViewById(R.id.timeTextView);
+        final ImageButton imageDeleteButton = (ImageButton)
+                view.findViewById(R.id.deleteButton);
 
         // add values to Views
         final String name = itemOnList.get(position);
@@ -68,12 +72,10 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
         textview.setText(name);
         timetextview.setText(time);
 
-        // If the list is longpressed delete it, first give a warning.
-        View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
 
+        imageDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-
+            public void onClick(View v) {
                 // Create a warning
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("Confirm delete");
@@ -111,6 +113,48 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // show warning
                 alertDialog.show();
+            }
+        });
+
+        // If the list is longpressed delete it, first give a warning.
+        View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
+
+            @Override
+            public boolean onLongClick(View view) {
+
+                // create dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                // set info
+                builder.setTitle("Rename")
+                        .setMessage("What will be the new name for: " + itemOnList.get(position) + "?");
+
+                // make user able to give new name
+                final EditText input = new EditText(context);
+                input.setText(itemOnList.get(position));
+
+
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "you changed it to " +  input.getText(), Toast.LENGTH_SHORT).show();
+                        itemOnList.set(position, input.getText().toString());
+                        notifyDataSetChanged();
+
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                // show dialog
+                builder.show();;
                 return true;
             }
         };
