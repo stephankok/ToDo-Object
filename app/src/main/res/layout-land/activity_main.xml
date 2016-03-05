@@ -10,13 +10,6 @@
     tools:context="com.example.stephan.todo.MainActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="italic"
-        android:text="Press on an item to open it.\n Longpress on an item to delete it"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
