@@ -73,7 +73,7 @@ public class ToDoActivity extends AppCompatActivity {
         }
         catch (Throwable error){
             Toast.makeText(ToDoActivity.this,
-                    "An error happened please try again", Toast.LENGTH_SHORT).show();
+                    "An Error Occurred: ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,12 +186,12 @@ public class ToDoActivity extends AppCompatActivity {
         AlertDialog.Builder alertDeleteAllItems = new AlertDialog.Builder(this);
 
         // set info.
-        alertDeleteAllItems.setTitle("Confirm delete")
-                .setMessage("Are you sure you want to delete all the items in this list?")
+        alertDeleteAllItems.setTitle(R.string.confirmDelete)
+                .setMessage(R.string.deleteAllMessage)
                 .setCancelable(false);
 
         // set buttons.
-        alertDeleteAllItems.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alertDeleteAllItems.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // On yes delete all.
@@ -201,7 +201,7 @@ public class ToDoActivity extends AppCompatActivity {
                 itemAdapter.notifyDataSetChanged();
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // On no cancel.

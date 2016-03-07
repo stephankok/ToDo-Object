@@ -114,7 +114,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // set info.
                 alertDialogBuilder.setTitle("Confirm delete")
-                        .setMessage("Are you sure you want to delete: " +
+                        .setMessage("Are you sure u want to delete: " +
                                 itemOnList.get(position) + "?")
                         .setCancelable(false)
 
@@ -125,7 +125,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                                 // on yes delete list.
 
                                 // Make Toast popup that you deleted list.
-                                String text = context.getString(R.string.youDeleted) +
+                                String text = "You deleted: " +
                                         itemOnList.get(position);
                                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
@@ -288,7 +288,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
         } catch (Throwable t) {
             // error happened.
             t.printStackTrace();
-            Toast.makeText(context, R.string.standardError + t.toString(), Toast.LENGTH_LONG)
+            Toast.makeText(context, "An Error Occurred: " + t.toString(), Toast.LENGTH_LONG)
                     .show();
 
         }

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thanks for using my app!"
+            android:text="@string/helpInfo"
             android:textSize="25sp"
             android:textColor="@android:color/black"
             android:textStyle="bold"
@@ -26,14 +26,14 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:text="If you have any question or cool ideas feel free to contact me at: TODO@gmail.com\n"/>
+            android:text="@string/helpFeedback"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:textStyle="bold"
-            android:text="Help menu:"
+            android:text="@string/helpIndex"
             android:paddingBottom="20dp"/>
 
         <TextView
@@ -41,13 +41,13 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Options with an list:"
+            android:text="@string/helpList"
             android:paddingBottom="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You can open a list by pressing on it.\n"/>
+            android:text="@string/helpListOpen"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="You can delete a list by pressing on:" />
+                android:text="@string/helpListDelete" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,12 +65,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="A popup will appear and pres yes to delete it.\n"/>
+            android:text="@string/helpListDelete2"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You can edit a list by long pressing on the text, a popup will appear wear you can change the text.\n"/>
+            android:text="@string/helpListEdit"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingBottom="10dp"
-            android:text="Inside a list:"/>
+            android:text="@string/helpItem"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="You can delete an item by pressing on:" />
+                android:text="@string/helpItemDelete" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,23 +96,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="A popup will appear and pres yes to delete it.\n"/>
+            android:text="@string/helpItemDelete2"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You can set an item done by pressing on the checkbox.\n"/>
+            android:text="@string/helpItemCheck"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You can delete the entire page by pressing 'CLEAR THIS LIST' at the botten of the screen.\n"/>
+            android:text="@string/helpItemClear"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You can set an item done by pressing on the checkbox.\n"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="You can edit an item by long pressing the text."/>
+            android:text="@string/helpItemEdit"/>
 
     </LinearLayout>
 

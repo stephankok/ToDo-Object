@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">To Do</string>
-    <string name="newItemToDo">Write a new To Do item</string>
+    <string name="appName">To Do</string>
+    <string name="newItemToDo">New To Do item</string>
     <string name="addButton">Add</string>
     <string name="deleteInfo">Delete an item by pressing it long. \nYou can make an item green by pressing it.</string>
     <string name="youDeleted">"You deleted: "</string>
@@ -8,4 +8,24 @@
     <string name="infoTextItems">To Do items:</string>
     <string name="infoTextLists">To Do lists:</string>
     <string name="deleteImage">Delete list.</string>
+    <string name="helpInfo">Thanks for using my app!</string>
+    <string name="helpFeedback">If you have any question or cool ideas feel free to contact me at: todo.app.infomail@gmail.com\n</string>
+    <string name="helpIndex">Help menu:</string>
+    <string name="helpList">Options with an list:</string>
+    <string name="helpListOpen">You can open a list by pressing on it.\n</string>
+    <string name="helpListDelete">You can delete a list by pressing on:</string>
+    <string name="helpListDelete2">A popup will appear and pres yes to delete it.\n</string>
+    <string name="helpListEdit">You can edit a list by long pressing on the text, a popup will appear wear you can change the text.\n</string>
+    <string name="helpItem">Inside a list:</string>
+    <string name="helpItemDelete">You can delete an item by pressing on:</string>
+    <string name="helpItemDelete2">A popup will appear and pres yes to delete it.\n</string>
+    <string name="helpItemCheck">You can set an item done by pressing on the checkbox.\n</string>
+    <string name="helpItemClear">You can delete the entire page by pressing \'CLEAR THIS LIST\' at the botten of the screen.\n</string>
+    <string name="helpItemEdit">You can edit an item by long pressing the text.</string>
+    <string name="mainHintEdit">New To Do list</string>
+    <string name="itemLoadError">An error happened please try again</string>
+    <string name="confirmDelete">Confirm delete</string>
+    <string name="deleteAllMessage">Are you sure you want to delete all the items in this list?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

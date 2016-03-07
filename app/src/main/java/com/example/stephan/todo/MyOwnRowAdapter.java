@@ -116,7 +116,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
                                 // on yes delete item.
 
                                 // Make Toast popup that you deleted list.
-                                String text = context.getString(R.string.youDeleted) +
+                                String text = "You deleted: " +
                                         itemOnList.get(position);
                                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
@@ -248,7 +248,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         } catch (Throwable t) {
             // error happened.
             t.printStackTrace();
-            Toast.makeText(context, R.string.standardError + t.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "An Error Occurred: "+ t.toString(), Toast.LENGTH_LONG).show();
 
         }
     }

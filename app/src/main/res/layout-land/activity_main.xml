@@ -17,7 +17,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="New To Do list"
+            android:hint="@string/mainHintEdit"
             android:id="@+id/addItemEditText"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
