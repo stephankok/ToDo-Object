@@ -3,12 +3,11 @@ package com.example.stephan.todo;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,56 +16,39 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 /**
- * An adapter Created By Stephan Kok.
+ * An item adapter for To DO app created By Stephan Kok.
  *
- *  !WARNING! When u set saveOnFile to true it will save all items on STORETEXT. First all
- *  data is saved then the line: END OF THE ITEMS NOW COLORS. code:182838 is written en then all
- *  the colors are saved.
- *  Set saveOnFile false to disable saving.
+ * With this adapter you can create items for inside an list.
  *
- *  Input:
- *  an ArrayList<String> of items to add. You can dynamically add or remove.
- *  an ArrayList<Integer> of color id's. When you add an item it is automatic black.
- *      You must make all color Color.BLACK or Color.Green.
- *
- *  Your layout wil need:
- *  TextView with id: nameTextView
- *
- *  Your strings xml will need:
- *  EMColorsAdapter: error message when collors cant load.
- *  standardError: standard error it will add the problem to string.
- *
- *  Features:
- *  It will delete an item that is long pressed.
- *  Items will turn green when pressing them
+ * Features:
+ * You can edit items that are long pressed.
+ * Items got a checkbox to check when they are finished.
+ * You can delete items by pressing the thrash button.
  */
 public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
     Context context;                // Activity to display the adapter
     ArrayList<String> itemOnList;   // Items of the to do list
     Boolean fileSaving;             // Set true to save items on STORETEXT
-    ArrayList<Integer> itemColor;   // color of the items
+    ArrayList<Boolean> itemCheckedArray;   // color of the items
     String fileToSaveAndLoad;
 
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile, ArrayList<Integer> colorData, String fileName){
+    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile, ArrayList<Boolean> checked, String fileName){
         super(contextOfApp, R.layout.single_row_items_layout, itemsOfToDoList);
 
         context = contextOfApp;
         itemOnList = itemsOfToDoList;
         fileSaving = saveOnFile;
-        itemColor = colorData;
+        itemCheckedArray = checked;
         fileToSaveAndLoad = fileName;
     }
 
     /**
-     * Add the picture and itemtoadd to the Listview.
-     *
-     * Set a onlongclick listener that will delete an item when it is long clicked
-     *
-     * set onclick listener that will turn items green.
+     * Initialize View.
+     * Set an OnClick on ImageButton and an OnLongClick on the View.
      */
     public View getView(final int position, View view, ViewGroup parent){
         if(view == null){
@@ -75,134 +57,145 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         }
 
         // find Views on ListView
-        final TextView textview = (TextView) view.findViewById(R.id.nameTextView);
+        final TextView itemTextView = (TextView) view.findViewById(R.id.nameTextView);
         final ImageButton imageDeleteButton = (ImageButton)
                 view.findViewById(R.id.deleteButton);
+        final CheckBox itemChecked = (CheckBox) view.findViewById(R.id.itemChecked);
 
         // add values to Views
         final String name = itemOnList.get(position);
+        boolean checked = itemCheckedArray.get(position);
 
-        // set text on textview
-        textview.setText(name);
-        textview.setTextColor(itemColor.get(position));
+        // Set text on itemTextView.
+        itemTextView.setText(name);
 
+        // Set checked.
+        itemChecked.setChecked(checked);
 
-        imageDeleteButton.setOnClickListener(new View.OnClickListener() {
+        // save when checked changed.
+        itemChecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create a warning
+                itemCheckedArray.set(position,itemChecked.isChecked());
+                updateAllData();
+            }
+        });
+
+        // Set delete listener.
+        imageDeleteButton.setOnClickListener(onDeleteButtonPressed(position));
+
+        // Set edit listener.
+        view.setOnLongClickListener(setOnLongClickListener(position));
+
+        // Done.
+        return view;
+    }
+
+    /**
+     * Return an onClickListener that will create a AlertDialog where users can delete their
+     * list.
+     */
+    public ImageButton.OnClickListener onDeleteButtonPressed(final int position){
+        // create OnClickListener below.
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create a AlertDialog.
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setTitle("Confirm delete");
-                alertDialogBuilder.setMessage("Are you sure you want to delete: " + name + "?")
+
+                // set info.
+                alertDialogBuilder.setTitle("Confirm delete")
+                        .setMessage("Are you sure you want to delete: " +
+                                itemOnList.get(position) + "?")
                         .setCancelable(false)
+
+                        // set buttons.
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // If you wanted to delete it, delete it
+                                // on yes delete item.
 
-                                // make message
-                                String text = context.getString(R.string.youDeleted) + name;
-                                // make popup
+                                // Make Toast popup that you deleted list.
+                                String text = context.getString(R.string.youDeleted) +
+                                        itemOnList.get(position);
                                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                                // delete item
+
+                                // delete item.
                                 itemOnList.remove(position);
-                                // update listview
+                                itemCheckedArray.remove(position);
+
+                                // update.
                                 notifyDataSetChanged();
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // end it
+                                // end it.
                                 dialog.cancel();
                             }
                         });
 
-                // make warning
+                // make AlertDialog popup.
                 AlertDialog alertDialog = alertDialogBuilder.create();
-
-                // show warning
                 alertDialog.show();
             }
-        });
+        };
+    }
 
-        // The longClickListener, delete items
-        View.OnLongClickListener longclicklistener = new View.OnLongClickListener(){
-
+    /**
+     * Return an onLongClickListener that will create a AlertDialog where users can edit their
+     * list name.
+     */
+    public View.OnLongClickListener setOnLongClickListener(final int position){
+        return new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
+                // Create a AlertDialog.
+                AlertDialog.Builder alertEditItemName = new AlertDialog.Builder(context);
 
-                // create dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                // set info.
+                alertEditItemName.setTitle("Rename")
+                        .setMessage("What will be the new name for: " +
+                                itemOnList.get(position) + "?");
 
-                // set info
-                builder.setTitle("Rename")
-                        .setMessage("What will be the new name for: " + itemOnList.get(position) + "?");
-
-                // make user able to give new name
+                // make EditText where users can give input.
                 final EditText input = new EditText(context);
                 input.setText(itemOnList.get(position));
-                builder.setView(input);
 
-                // Set up the buttons
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                // put it in AlertDialog.
+                alertEditItemName.setView(input);
+
+                // Set up the buttons.
+                alertEditItemName.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "you changed it to " + input.getText(), Toast.LENGTH_SHORT).show();
+                        // On yes change name of the item.
                         itemOnList.set(position, input.getText().toString());
                         notifyDataSetChanged();
 
                     }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // On no cancel.
                         dialog.cancel();
                     }
                 });
 
                 // show dialog
-                builder.show();;
+                alertEditItemName.show();;
                 return true;
             }
         };
-
-        // the onclick listener, turn items green
-        View.OnClickListener shortlistener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Check if green, make black
-                if(textview.getTextColors() == ColorStateList.valueOf(Color.GREEN)){
-                    textview.setTextColor(Color.BLACK);
-                    itemColor.set(position,Color.BLACK);
-                }
-                // else it is black, make it green
-                else {
-                    textview.setTextColor(Color.GREEN);
-                    itemColor.set(position, Color.GREEN);
-                }
-
-                // save data, you wont need to update listview and adapter
-                if(fileSaving){
-                    updateAllData();
-                }
-            }
-        };
-
-        // add all listeners to View
-        view.setOnLongClickListener(longclicklistener);
-        view.setOnClickListener(shortlistener);
-
-        return view;
     }
 
-
     /**
-     *  Add color in front.
-     *  It must be black so requires no input
+     *  When u add an Item you must also add a color.
      */
-    public void insertColor(){
-        itemColor.add(0,Color.BLACK);
+    public void insert(String itemToAdd, int pos){
+        super.insert(itemToAdd,pos);
+        itemCheckedArray.add(pos, false);
     }
 
     /**
@@ -212,31 +205,29 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         super.notifyDataSetChanged();
 
         // save on file
-        if(fileSaving){
-            updateAllData();
-        }
+        updateAllData();
     }
 
-    public void clearlist(){
-        itemColor.clear();
+    /**
+     * This will empty all the data in the adapter.
+     */
+    public void clearList(){
+        itemCheckedArray.clear();
         itemOnList.clear();
     }
 
 
     /**
-     * When fileSaving is set true, this function will be called.
-     * It will open/create a file STORETEXT.
-     * It will save all itemsOnList and separate them by a newline.
-     *
-     * To seperate data from colors there will be writen a special line:
-     * END OF THE ITEMS NOW COLORS. code:182838
-     *
-     * Then all colors id will be added in string format and will be seperated by a newline.
+     *  Save data on file.
+     *  First all items, separated by newline.
+     *  Then a separation line "END OF THE ITEMS NOW CHECKED".
+     *  Then all check statuses separated by a newline.
      */
     public void updateAllData(){
         try {
             // open/create
-            PrintStream out = new PrintStream(context.getApplicationContext().openFileOutput(fileToSaveAndLoad,context.MODE_PRIVATE));
+            PrintStream out = new PrintStream(context.getApplicationContext()
+                    .openFileOutput(fileToSaveAndLoad, Context.MODE_PRIVATE));
 
             // add all items
             for( int i = 0; i < itemOnList.size(); i++){
@@ -244,11 +235,11 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
             }
 
             // add special line.
-            out.println("END OF THE ITEMS NOW COLORS. code:182838\n");
+            out.println("END OF THE ITEMS NOW CHECKED\n");
 
-            // add all colors
-            for (int i = 0; i < itemColor.size(); i++){
-                out.println(itemColor.get(i).toString() + "\n");
+            // add all check statuses.
+            for (int i = 0; i < itemCheckedArray.size(); i++){
+                out.println(Boolean.toString(itemCheckedArray.get(i)) + "\n");
             }
 
             // close file

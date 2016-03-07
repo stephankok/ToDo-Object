@@ -1,20 +1,18 @@
 package com.example.stephan.todo;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.MenuRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,72 +21,70 @@ import java.util.Scanner;
 
 /**
  * A To Do app created by Stephan Kok.
- *
- * This is the main activity here you will be able to create lists. For this MyOwnListAdapter is
- * used.
- * You can delete items by longpressing them. You will get a warning first.
- * It will save all data in PARENTFILE
- *
+ * Show all the list the user have created.
  */
 public class MainActivity extends AppCompatActivity {
 
     // Initialize values.
-    EditText addItemToList;                                    // Get To Do from user
-    ArrayList<String> itemsOnList = new ArrayList<String>();   // Save all items of To Do List
-    ArrayList<String> timeList = new ArrayList<String>();   // Save all items of To Do List
-    ArrayList<String> fileNameList = new ArrayList<String>(); // save all filenames
-    String fileCounter;                                         // keep track of files used
-    ListView listView;                                         // Place adapter here
-    MyOwnListAdapter myadepter;                                 // Make adapter
-    String fileName = "PARENTFILE";                        // main save file
-    Calendar time;                                               // geth the time
-    Boolean editable = false;                                    // check wether u are in edit mode or not
+    EditText addItemToList;                                     // Get To Do from user.
+    ArrayList<String> itemsOnList = new ArrayList<String>();    // Save all items of To Do List.
+    ArrayList<String> timeList = new ArrayList<String>();       // Save all items of To Do List.
+    ArrayList<String> fileNameList = new ArrayList<String>();   // Save all filenames.
+    String fileCounter;                                         // Keep track of files used.
+    ListView listView;                                          // Place adapter here.
+    MyOwnListAdapter listAdapter;                               // Make adapter.
+    String fileName;                                            // Main save file.
+    Calendar calender = Calendar.getInstance();                 // Get the time.
+    SimpleDateFormat dateFormat                                 // Specific date format.
+            = new SimpleDateFormat("dd-MMM HH:mm");
 
     /**
      * Called on create.
-     * !Warning Reads all data from STORETEXT.
-     * Find all elements. Initialize MyOwnRowAdapter. and add it to listView
+     * Make adapter, read data and set ListView.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // stop keyboard from popping up
-//        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        // find elements
+        // find elements.
         addItemToList = (EditText) findViewById(R.id.addItemEditText);
         listView = (ListView) findViewById(R.id.listView);
 
-        // read a file and add it to itemsOnList an colorData
+        // Initialize fileCounter to 0.
         fileCounter = String.format("%010d",0);
-        Log.v("fileCounter", fileCounter);
+
+        // read data from fileName.
+        fileName = "PARENTFILE";
         readDataFromFile();
 
-        // make adapter
-        myadepter = new MyOwnListAdapter(this, itemsOnList, fileName, timeList, fileNameList, fileCounter);
+        // make adapter.
+        listAdapter = new MyOwnListAdapter(this, itemsOnList, fileName, timeList, fileNameList, fileCounter);
 
-        // add adapter to listview
-        listView.setAdapter(myadepter);
+        // add adapter to ListView.
+        listView.setAdapter(listAdapter);
 
-        // When editting inside listview, the EditText loses focusablity. This was the fix.
+        // When editing inside ListView, the EditText loses focusability. This was the fix.
         listView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-
     }
 
 
-    // menu button testgit
+    /**
+     * Set Menu.
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.actionbar, menu);
         return true;
     }
-
+    /**
+     * Add a listener on action bar.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         super.onOptionsItemSelected(item);
-
+        // check witch item is pressed.
         switch (item.getItemId()){
             case R.id.help:
                 Intent helpWindow = new Intent(this, HelpActivity.class);
@@ -104,29 +100,28 @@ public class MainActivity extends AppCompatActivity {
      * It will add item to adapter and update it.
      */
     public void updateListView(View view) {
-
         // get item to add
         String itemToAdd = addItemToList.getText().toString();
 
+        // if not empty add.
         if (!itemToAdd.isEmpty()) {
             // get date
-            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-H:m");
-            String formattedDate = df.format(time.getInstance().getTime());
+            String formattedDate = dateFormat.format(calender.getTime());
 
             // make fileSaveLocation
-            Integer fileCount = Integer.parseInt(myadepter.fileCounter) + 1;
+            Integer fileCount = Integer.parseInt(listAdapter.fileCounter) + 1;
             String fileNumber = String.format("%010d", fileCount);
 
             Log.v("FileCounterUpdate", fileNumber);
 
             // add item
-            myadepter.itemOnList.add(0,itemToAdd);
-            myadepter.timeList.add(0,formattedDate);
-            myadepter.fileSaveLocation.add(0,fileNumber);
-            myadepter.fileCounter = fileNumber;
+            listAdapter.itemOnList.add(0,itemToAdd);
+            listAdapter.timeList.add(0,formattedDate);
+            listAdapter.fileSaveLocation.add(0,fileNumber);
+            listAdapter.fileCounter = fileNumber;
 
             // update adapter and listView.
-            myadepter.notifyDataSetChanged();
+            listAdapter.notifyDataSetChanged();
 
             // make it empty
             addItemToList.setText("");
@@ -134,16 +129,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * !WARNING Reads all data from STORETEXT. Read apdapter to see how saving works.
-     * Get all data in file and add them to placeReadedData.
+     * Read the data on fileName.
      */
     public void readDataFromFile() {
+        // make sure list is clear
         itemsOnList.clear();
+        timeList.clear();
+        fileNameList.clear();
+
+        // read file
         try {
-            // Open File
+            // Open File.
             Scanner scan = new Scanner(openFileInput(fileName));
 
-            // first get the filecounter
+            // first get the fileCounter.
             while(scan.hasNextLine()){
                 String line = scan.nextLine();
                 if(!line.isEmpty()){
@@ -152,37 +151,31 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            // get all list names.
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
-
-                // If this line is found you will get color id's
                 if (line.compareTo("Done Now Time") == 0) {
                     break;
                 }
-
-                // if line is not empty it is data, add it.
                 if (!line.isEmpty()) {
                     itemsOnList.add(line);
                 }
             }
 
-            // Now find all Color's
+            // get all dates.
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
-
                 if (line.compareTo("Done Now FileSaveLocations") == 0) {
                     break;
                 }
-
                 if (!line.isEmpty()) {
                     timeList.add(line);
                 }
             }
 
-            // Now find all Filesavelocations
+            // get all File save locations.
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
-
                 if (!line.isEmpty()) {
                     fileNameList.add(line);
                 }

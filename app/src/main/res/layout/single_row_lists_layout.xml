@@ -9,25 +9,29 @@
     android:paddingTop="@dimen/paddingListView">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/textSizeToDoListItems"
         android:id="@+id/nameTextView"
         android:textColor="@android:color/black"
-        android:layout_weight="10000"/>
+        android:layout_weight="1"/>
 
     <TextView
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/timeTextView"
-        android:layout_gravity="end"
-        android:gravity="end"
-        android:layout_weight="1"/>
+        android:textSize="15sp"
+        android:textStyle="italic"
+        android:layout_gravity="end|center_vertical"
+        android:gravity="end"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/deleteImage"
         android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_gravity="center_vertical"
         android:id="@+id/deleteButton"
         android:src="@drawable/delete_icon"
         android:background="@android:color/transparent"

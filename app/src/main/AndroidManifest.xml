@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".HelpActivity" />
-        <activity android:name=".ToDoActivity" />
+        <activity android:name=".ToDoActivity"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.example.stephan.todo;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,94 +8,98 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * This activity is called when u want to show an item.
- *
- * What file to load and save items will need to be in extras.
- *
+ * This activity is called when u want to show all items of the list.
+ * What file to load and save items will need to be saved in extras.
  */
 public class ToDoActivity extends AppCompatActivity {
 
     // Initialize values.
-    EditText addItemToList;                                    // Get To Do from user
-    ArrayList<String> itemsOnList = new ArrayList<String>();   // Save all items of To Do List
-    ListView listView;                                         // Place adapter here
-    MyOwnRowAdapter myadepter;                                 // Make adapter
-    Boolean saveDataOnFile = true;                             // Ensure data is saved
-    ArrayList<Integer> colorData = new ArrayList<Integer>();   // Save the color of To Do list items
-    String listName;                                    // list name
-    String fileSaveLocation;                            // where the items are stored
+    EditText addItemToList;                                     // Get To Do from user
+    ArrayList<String> itemsOnList = new ArrayList<String>();    // Save all items of To Do List
+    ListView listView;                                          // Place adapter here
+    MyOwnRowAdapter itemAdapter;                                // Make adapter
+    Boolean saveDataOnFile = true;                              // Ensure data is saved
+    ArrayList<Boolean> itemCheckedArray                         // Save the color of To Do list items
+            = new ArrayList<Boolean>();
+    String listName;                                            // list name
+    String fileSaveLocation;                                    // where the items are stored
+    TextView nameOfThisList;                                    // display list name
 
 
     /**
      * Called on create.
+     * Get data from previous activity, make adapter, read data and set ListView.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do);
 
-        // stop keyboard from popping up
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        // find elements
+        // find elements.
         addItemToList = (EditText) findViewById(R.id.addItemEditText);
         listView = (ListView) findViewById(R.id.listView);
-        TextView nameOfThisList = (TextView) findViewById(R.id.nameOfThisList);
+        nameOfThisList = (TextView) findViewById(R.id.nameOfThisList);
 
-        // get filename to save and load, if not exist give error
+        // stop keyboard from popping up.
+
+        // get filename to save and load, if not exist give error.
         try {
-            // get filename
+            // get filename.
             listName = getIntent().getExtras().getString("listName");
             fileSaveLocation = getIntent().getExtras().getString("fileSaveLocation");
 
-            // set name of this list
+            // set name of this list.
             nameOfThisList.setText(listName);
 
-            // read a file and add it to itemsOnList an colorData
-            readDataFromFile(itemsOnList, colorData, fileSaveLocation);
+            // read a file and add it to itemsOnList an colorData.
+            readDataFromFile();
 
-            // make adapter
-            myadepter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile, colorData, fileSaveLocation);
+            // make adapter.
+            itemAdapter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile,
+                    itemCheckedArray, fileSaveLocation);
 
-            // add adapter to listview
-            listView.setAdapter(myadepter);
+            // add adapter to ListView.
+            listView.setAdapter(itemAdapter);
+
         }
         catch (Throwable error){
             Toast.makeText(ToDoActivity.this,
-                    "An error happend please try again", Toast.LENGTH_SHORT).show();
+                    "An error happened please try again", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * Add actionbar.
-     * There will be a back button to return to the mainscreen
-     * There will be a edit button and when u press settings a help file.
-     * There will be a help option when settings is pressed, here you will get information about the
-     * app
+     * Set Menu.
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.actionbar, menu);
 
         // Make a back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         return true;
     }
+    /**
+     * Add a listener on action bar.
+     */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         super.onOptionsItemSelected(item);
 
+        // check witch item is pressed.
         switch (item.getItemId()){
             case R.id.help:
                 Intent settingsWindows = new Intent(this, HelpActivity.class);
@@ -110,63 +113,60 @@ public class ToDoActivity extends AppCompatActivity {
         }
     }
 
-
-
     /**
      * Is called when ADD button is clicked.
      * It will add item to adapter and update it.
      */
     public void updateListView(View view) {
-
         // get item to add
         String itemToAdd = addItemToList.getText().toString();
+
+        // check if not empty
         if (!itemToAdd.isEmpty()) {
-            // make it empty
-            addItemToList.setText("");
-
-            // add item
-            myadepter.insert(itemToAdd, 0);
-
-            // add color
-            myadepter.insertColor();
+            // add item.
+            itemAdapter.insert(itemToAdd, 0);
 
             // update adapter and listView.
-            myadepter.notifyDataSetChanged();
+            itemAdapter.notifyDataSetChanged();
+
+            // make EditText empty again.
+            addItemToList.setText("");
         }
     }
 
     /**
-     * !WARNING Reads all data from fileName. Read apdapter to see how saving works.
-     * Get all data in file and add them to placeReadedData.
+     * Read he file fileName
      */
-    public void readDataFromFile(ArrayList<String> placeReadedData, ArrayList<Integer> placeColorData, String fileName) {
-        placeColorData.clear();
-        placeReadedData.clear();
+    public void readDataFromFile() {
+        // make sure lists are clear.
+        itemCheckedArray.clear();
+        itemsOnList.clear();
+
         try {
             // Open File
-            Scanner scan = new Scanner(openFileInput(fileName));
+            Scanner scan = new Scanner(openFileInput(fileSaveLocation));
 
             // Find all To Do items
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
 
                 // If this line is found you will get color id's
-                if (line.compareTo("END OF THE ITEMS NOW COLORS. code:182838") == 0) {
+                if (line.compareTo("END OF THE ITEMS NOW CHECKED") == 0) {
                     break;
                 }
 
                 // if line is not empty it is data, add it.
                 if (!line.isEmpty()) {
-                    placeReadedData.add(line);
+                    itemsOnList.add(line);
                 }
             }
 
-            // Now find all Color's
+            // Now find all checkboxes.
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
 
                 if (!line.isEmpty()) {
-                    placeColorData.add(Integer.parseInt(line));
+                    itemCheckedArray.add(Boolean.parseBoolean(line));
                 }
             }
 
@@ -177,28 +177,41 @@ public class ToDoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This will delete all items in the list.
+     */
     public void clearTheCurrentList(View view){
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        // Make an AlertDialog that will delete all items in list.
+        AlertDialog.Builder alertDeleteAllItems = new AlertDialog.Builder(this);
 
-        alertDialogBuilder.setTitle("Confirm delete");
-        alertDialogBuilder.setMessage("Are you sure you want to delete all the items in this list?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        // set info.
+        alertDeleteAllItems.setTitle("Confirm delete")
+                .setMessage("Are you sure you want to delete all the items in this list?")
+                .setCancelable(false);
+
+        // set buttons.
+        alertDeleteAllItems.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                myadepter.clearlist();
-                myadepter.notifyDataSetChanged();
-            }
+                // On yes delete all.
+                itemAdapter.clearList();
+
+                // update.
+                itemAdapter.notifyDataSetChanged();
+                    }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // do this
+                        // On no cancel.
+                        dialog.cancel();
                     }
                 });
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
+        // Make AlertDialog popup.
+        AlertDialog alertDialog = alertDeleteAllItems.create();
         alertDialog.show();
     }
+
 }

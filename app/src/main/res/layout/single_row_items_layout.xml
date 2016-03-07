@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,8 +9,17 @@
     android:paddingRight="@dimen/paddingListView"
     android:paddingTop="@dimen/paddingListView">
 
-    <TextView
+    <android.support.v7.widget.AppCompatCheckBox
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/itemChecked"
+        android:layout_gravity="center_vertical"
+        app:buttonTint="@color/colorGreenButton"
+        android:checked="false" />
+
+
+    <TextView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/textSizeToDoListItems"
         android:id="@+id/nameTextView"
@@ -19,7 +29,8 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:contentDescription="@string/deleteImage"
+        android:layout_gravity="end|center_vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:id="@+id/deleteButton"
