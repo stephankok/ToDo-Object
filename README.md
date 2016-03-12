@@ -1,9 +1,5 @@
 # ToDo
-An App that lets you create your own ToDo items. It will save the data.
-
+ToDo app now with object programming
 
 By Stephan Kok.
 StudendNumber: 10627987.
-
-
-Features: delete items on long click, turn items green when pressed
