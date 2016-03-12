@@ -69,7 +69,7 @@ public class ToDoListSingleton {
         // make sure list is clear
         toDoLists.clear();
 
-        // read file
+        // read file.
         try {
             // Open File.
             Scanner scan = new Scanner(context.openFileInput(thisFileLocation));
