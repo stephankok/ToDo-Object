@@ -115,7 +115,7 @@ public class ToDoActivity extends AppCompatActivity {
         if (!itemToAdd.isEmpty()) {
 
             // add item.
-            toDoList.addNewItem(itemToAdd, false);
+            toDoList.pushNewItem(itemToAdd, false);
 
             // update adapter and listView.
             itemAdapter.notifyDataSetChanged();
