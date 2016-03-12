@@ -25,7 +25,8 @@
     <string name="mainHintEdit">New To Do list</string>
     <string name="itemLoadError">An error happened please try again</string>
     <string name="confirmDelete">Confirm delete</string>
-    <string name="deleteAllMessage">Are you sure you want to delete all the items in this list?</string>
+    <string name="deleteAllMessage">Are you sure you want to delete all CHECKED items in this list?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="itemsDeleteChecked">Delete checked items</string>
 </resources>

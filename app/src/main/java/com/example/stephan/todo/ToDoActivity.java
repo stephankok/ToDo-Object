@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,15 +25,12 @@ public class ToDoActivity extends AppCompatActivity {
 
     // Initialize values.
     EditText addItemToList;                                     // Get To Do from user
-    ArrayList<String> itemsOnList = new ArrayList<String>();    // Save all items of To Do List
     ListView listView;                                          // Place adapter here
     MyOwnRowAdapter itemAdapter;                                // Make adapter
-    Boolean saveDataOnFile = true;                              // Ensure data is saved
-    ArrayList<Boolean> itemCheckedArray                         // Save the color of To Do list items
-            = new ArrayList<Boolean>();
-    String listName;                                            // list name
-    String fileSaveLocation;                                    // where the items are stored
     TextView nameOfThisList;                                    // display list name
+    ToDoListSingleton toDoListManager;                          // Maneger
+    ToDoList toDoList;                                          // the whole list
+    int listPosition;                                           // position of the list
 
 
     /**
@@ -49,32 +47,25 @@ public class ToDoActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
         nameOfThisList = (TextView) findViewById(R.id.nameOfThisList);
 
-        // stop keyboard from popping up.
+        toDoListManager = ToDoListSingleton.getInstance(this);
 
-        // get filename to save and load, if not exist give error.
-        try {
-            // get filename.
-            listName = getIntent().getExtras().getString("listName");
-            fileSaveLocation = getIntent().getExtras().getString("fileSaveLocation");
+        listPosition = getIntent().getExtras().getInt("Position");
 
-            // set name of this list.
-            nameOfThisList.setText(listName);
+        // read a file and add it to itemsOnList an colorData.
+        toDoListManager.readItemData(listPosition);
 
-            // read a file and add it to itemsOnList an colorData.
-            readDataFromFile();
+        // Get the ToDoList.
+        toDoList = toDoListManager.getToDoList(listPosition);
 
-            // make adapter.
-            itemAdapter = new MyOwnRowAdapter(this, itemsOnList, saveDataOnFile,
-                    itemCheckedArray, fileSaveLocation);
+        // Show name of this list to users.
+        nameOfThisList.setText(toDoList.getName());
 
-            // add adapter to ListView.
-            listView.setAdapter(itemAdapter);
+        // make adapter.
+        itemAdapter = new MyOwnRowAdapter(this, toDoListManager.getToDoList(listPosition),
+                toDoListManager, listPosition);
 
-        }
-        catch (Throwable error){
-            Toast.makeText(ToDoActivity.this,
-                    "An Error Occurred: ", Toast.LENGTH_SHORT).show();
-        }
+        // add adapter to ListView.
+        listView.setAdapter(itemAdapter);
     }
 
     /**
@@ -114,7 +105,6 @@ public class ToDoActivity extends AppCompatActivity {
     }
 
     /**
-     * Is called when ADD button is clicked.
      * It will add item to adapter and update it.
      */
     public void updateListView(View view) {
@@ -123,57 +113,15 @@ public class ToDoActivity extends AppCompatActivity {
 
         // check if not empty
         if (!itemToAdd.isEmpty()) {
+
             // add item.
-            itemAdapter.insert(itemToAdd, 0);
+            toDoList.addNewItem(itemToAdd, false);
 
             // update adapter and listView.
             itemAdapter.notifyDataSetChanged();
 
             // make EditText empty again.
             addItemToList.setText("");
-        }
-    }
-
-    /**
-     * Read he file fileName
-     */
-    public void readDataFromFile() {
-        // make sure lists are clear.
-        itemCheckedArray.clear();
-        itemsOnList.clear();
-
-        try {
-            // Open File
-            Scanner scan = new Scanner(openFileInput(fileSaveLocation));
-
-            // Find all To Do items
-            while (scan.hasNextLine()) {
-                String line = scan.nextLine();
-
-                // If this line is found you will get color id's
-                if (line.compareTo("END OF THE ITEMS NOW CHECKED") == 0) {
-                    break;
-                }
-
-                // if line is not empty it is data, add it.
-                if (!line.isEmpty()) {
-                    itemsOnList.add(line);
-                }
-            }
-
-            // Now find all checkboxes.
-            while (scan.hasNextLine()) {
-                String line = scan.nextLine();
-
-                if (!line.isEmpty()) {
-                    itemCheckedArray.add(Boolean.parseBoolean(line));
-                }
-            }
-
-            // done
-            scan.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -194,11 +142,11 @@ public class ToDoActivity extends AppCompatActivity {
         alertDeleteAllItems.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // On yes delete all.
-                itemAdapter.clearList();
+                        // On yes delete all.
+                        toDoList.deleteAllItems();
 
-                // update.
-                itemAdapter.notifyDataSetChanged();
+                        // update.
+                        itemAdapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

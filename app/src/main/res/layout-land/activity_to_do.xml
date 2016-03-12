@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/clearButton"
-            android:text="Clear this list"
+            android:text="@string/itemsDeleteChecked"
             android:textColor="@android:color/black"
             android:onClick="clearTheCurrentList"
             android:layout_gravity="bottom"

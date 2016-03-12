@@ -17,9 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -33,33 +31,25 @@ import java.util.Calendar;
  * Delete a list by pressing the thrash button.
  *
  */
-public class MyOwnListAdapter extends ArrayAdapter<String> {
+public class MyOwnListAdapter extends ArrayAdapter<ToDoList> {
 
     Context context;                    // Activity to display the adapter.
-    ArrayList<String> itemOnList;       // Items of the to do list.
-    String fileToSaveAndLoad;           // Store data here.
-    ArrayList<String> timeList;         // Store the data of when the list is added.
-    ArrayList<String> fileSaveLocation; // Store the location of where the file is saved.
-    String fileCounter;                 // Keep track of files.
     Calendar calender                   // Get time.
             = Calendar.getInstance();
     SimpleDateFormat dateFormat         // Specific date format.
             = new SimpleDateFormat("dd-MMM HH:mm");
+    ToDoListSingleton toDoLists;
+
 
     /**
      * Initialize MMyOwnRowAdapter.
      */
-    public MyOwnListAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList,
-                            String fileName, ArrayList<String> currentTime,
-                            ArrayList<String> fileNameList, String fileRecord){
-        super(contextOfApp, R.layout.single_row_lists_layout, itemsOfToDoList);
+    public MyOwnListAdapter(Context contextOfApp, ToDoListSingleton todoManger){
+        super(contextOfApp, R.layout.single_row_lists_layout, todoManger.getToDoLists());
 
         context = contextOfApp;
-        itemOnList = itemsOfToDoList;
-        fileToSaveAndLoad = fileName;
-        timeList = currentTime;
-        fileSaveLocation = fileNameList;
-        fileCounter = fileRecord;
+        toDoLists = todoManger;
+
     }
 
     /**
@@ -80,11 +70,13 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                 view.findViewById(R.id.deleteButton);
 
         // add values to Views.
-        final String name = itemOnList.get(position);
-        final String time = timeList.get(position);
+        ToDoList currentList = toDoLists.getToDoList(position);
 
-        // set text.
+        final String name = currentList.getName();
+        final String time = currentList.getTime();
+
         textview.setText(name);
+
         timetextview.setText(time);
 
         // Set delete listener.
@@ -115,7 +107,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                 // set info.
                 alertDialogBuilder.setTitle("Confirm delete")
                         .setMessage("Are you sure u want to delete: " +
-                                itemOnList.get(position) + "?")
+                                toDoLists.getToDoList(position).getName() + "?")
                         .setCancelable(false)
 
                         // set buttons.
@@ -126,18 +118,11 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                                 // Make Toast popup that you deleted list.
                                 String text = "You deleted: " +
-                                        itemOnList.get(position);
+                                        toDoLists.getToDoList(position).getName();
                                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
-                                // delete list.
-                                itemOnList.remove(position);
-
-                                // delete date.
-                                timeList.remove(position);
-
-                                // delete file.
-                                context.deleteFile(fileSaveLocation.get(position));
-                                fileSaveLocation.remove(position);
+                                // remove list and items.
+                                toDoLists.removeList(position);
 
                                 // update.
                                 notifyDataSetChanged();
@@ -176,7 +161,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // make EditText where users can give input.
                 final EditText input = new EditText(context);
-                input.setText(itemOnList.get(position));
+                input.setText(toDoLists.getToDoList(position).getName());
 
                 // put it in AlertDialog.
                 alertEditListName.setView(input);
@@ -186,11 +171,11 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // On yes change name
-                        itemOnList.set(position, input.getText().toString());
+                        toDoLists.getToDoList(position).setName(input.getText().toString());
 
                         // update time
                         String formattedDate = dateFormat.format(calender.getTime());
-                        timeList.set(position,formattedDate);
+                        toDoLists.getToDoList(position).setTime(formattedDate);
                         notifyDataSetChanged();
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -224,8 +209,7 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
 
                 // add the name of the file, so you will now what file to load.
                 Bundle extras = new Bundle();
-                extras.putString("listName", itemOnList.get(position));
-                extras.putString("fileSaveLocation", fileSaveLocation.get(position));
+                extras.putInt("Position", position);
                 loadItems.putExtras(extras);
 
                 // start.
@@ -240,57 +224,6 @@ public class MyOwnListAdapter extends ArrayAdapter<String> {
     public void notifyDataSetChanged(){
         super.notifyDataSetChanged();
 
-        // save on file
-        updateAllData();
-    }
-
-    /**
-     * Save the data of in the file given.
-     * first save all list names, separated by a newline.
-     * When finished write a line: "Done Now Time".
-     * Then save all list date, separated by a newline.
-     * When finished write a line: "Done Now FileSaveLocations".
-     * Then save all file locations.
-     */
-    public void updateAllData(){
-        try {
-            // open/create.
-            PrintStream out = new PrintStream(context.getApplicationContext()
-                            .openFileOutput(fileToSaveAndLoad,Context.MODE_PRIVATE));
-
-            // first print the file recorder.
-            out.println(fileCounter);
-
-            // add all lists.
-            for( int i = 0; i < itemOnList.size(); i++){
-                out.println(itemOnList.get(i) + "\n");
-            }
-
-            // write separation line.
-            out.println("Done Now Time\n");
-
-            // add all list names.
-            for( int i = 0; i < timeList.size(); i++){
-                out.println(timeList.get(i) + "\n");
-            }
-
-            // write separation line.
-            out.println("Done Now FileSaveLocations\n");
-
-            // write all file locations.
-            for(int i = 0; i < fileSaveLocation.size(); i++){
-                out.println(fileSaveLocation.get(i) + "\n");
-            }
-
-            // close file.
-            out.close();
-
-        } catch (Throwable t) {
-            // error happened.
-            t.printStackTrace();
-            Toast.makeText(context, "An Error Occurred: " + t.toString(), Toast.LENGTH_LONG)
-                    .show();
-
-        }
+        toDoLists.writeDataOnFile();
     }
 }

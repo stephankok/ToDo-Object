@@ -25,25 +25,24 @@ import java.util.ArrayList;
  * Items got a checkbox to check when they are finished.
  * You can delete items by pressing the thrash button.
  */
-public class MyOwnRowAdapter extends ArrayAdapter<String> {
+public class MyOwnRowAdapter extends ArrayAdapter<ToDoItem> {
 
     Context context;                // Activity to display the adapter
-    ArrayList<String> itemOnList;   // Items of the to do list
-    Boolean fileSaving;             // Set true to save items on STORETEXT
-    ArrayList<Boolean> itemCheckedArray;   // color of the items
-    String fileToSaveAndLoad;
+    ToDoList toDoList;
+    ToDoListSingleton toDoListManeger;
+    int listPosition;
 
     /**
      * Initialize MMyOwnRowAdapter
      */
-    public MyOwnRowAdapter(Context contextOfApp, ArrayList<String> itemsOfToDoList, Boolean saveOnFile, ArrayList<Boolean> checked, String fileName){
-        super(contextOfApp, R.layout.single_row_items_layout, itemsOfToDoList);
+    public MyOwnRowAdapter(Context contextOfApp, ToDoList todoList, ToDoListSingleton singleton,
+                           int posOfList){
+        super(contextOfApp, R.layout.single_row_items_layout, todoList.getAllToDoItems());
 
         context = contextOfApp;
-        itemOnList = itemsOfToDoList;
-        fileSaving = saveOnFile;
-        itemCheckedArray = checked;
-        fileToSaveAndLoad = fileName;
+        toDoList = todoList;
+        toDoListManeger = singleton;
+        listPosition = posOfList;
     }
 
     /**
@@ -63,8 +62,10 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         final CheckBox itemChecked = (CheckBox) view.findViewById(R.id.itemChecked);
 
         // add values to Views
-        final String name = itemOnList.get(position);
-        boolean checked = itemCheckedArray.get(position);
+        final ToDoItem thisItem = toDoList.getItem(position);
+
+        final String name = thisItem.getName();
+        boolean checked = thisItem.getItemStatus();
 
         // Set text on itemTextView.
         itemTextView.setText(name);
@@ -76,8 +77,9 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
         itemChecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemCheckedArray.set(position,itemChecked.isChecked());
-                updateAllData();
+                thisItem.changeItemStatus(itemChecked.isChecked());
+
+                toDoListManeger.writeItemData(listPosition);
             }
         });
 
@@ -106,7 +108,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
                 // set info.
                 alertDialogBuilder.setTitle("Confirm delete")
                         .setMessage("Are you sure you want to delete: " +
-                                itemOnList.get(position) + "?")
+                                toDoList.getItem(position).getName() + "?")
                         .setCancelable(false)
 
                         // set buttons.
@@ -117,12 +119,11 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
 
                                 // Make Toast popup that you deleted list.
                                 String text = "You deleted: " +
-                                        itemOnList.get(position);
+                                        toDoList.getItem(position).getName();
                                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
                                 // delete item.
-                                itemOnList.remove(position);
-                                itemCheckedArray.remove(position);
+                                toDoList.removeItem(position);
 
                                 // update.
                                 notifyDataSetChanged();
@@ -157,11 +158,11 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
                 // set info.
                 alertEditItemName.setTitle("Rename")
                         .setMessage("What will be the new name for: " +
-                                itemOnList.get(position) + "?");
+                                toDoList.getItem(position).getName() + "?");
 
                 // make EditText where users can give input.
                 final EditText input = new EditText(context);
-                input.setText(itemOnList.get(position));
+                input.setText(toDoList.getItem(position).getName());
 
                 // put it in AlertDialog.
                 alertEditItemName.setView(input);
@@ -171,7 +172,7 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // On yes change name of the item.
-                        itemOnList.set(position, input.getText().toString());
+                        toDoList.getItem(position).changeName(input.getText().toString());
                         notifyDataSetChanged();
 
                     }
@@ -191,65 +192,12 @@ public class MyOwnRowAdapter extends ArrayAdapter<String> {
     }
 
     /**
-     *  When u add an Item you must also add a color.
-     */
-    public void insert(String itemToAdd, int pos){
-        super.insert(itemToAdd,pos);
-        itemCheckedArray.add(pos, false);
-    }
-
-    /**
      * When you update the data also save them on File.
      */
     public void notifyDataSetChanged(){
         super.notifyDataSetChanged();
 
         // save on file
-        updateAllData();
-    }
-
-    /**
-     * This will empty all the data in the adapter.
-     */
-    public void clearList(){
-        itemCheckedArray.clear();
-        itemOnList.clear();
-    }
-
-
-    /**
-     *  Save data on file.
-     *  First all items, separated by newline.
-     *  Then a separation line "END OF THE ITEMS NOW CHECKED".
-     *  Then all check statuses separated by a newline.
-     */
-    public void updateAllData(){
-        try {
-            // open/create
-            PrintStream out = new PrintStream(context.getApplicationContext()
-                    .openFileOutput(fileToSaveAndLoad, Context.MODE_PRIVATE));
-
-            // add all items
-            for( int i = 0; i < itemOnList.size(); i++){
-                out.println(itemOnList.get(i) + "\n");
-            }
-
-            // add special line.
-            out.println("END OF THE ITEMS NOW CHECKED\n");
-
-            // add all check statuses.
-            for (int i = 0; i < itemCheckedArray.size(); i++){
-                out.println(Boolean.toString(itemCheckedArray.get(i)) + "\n");
-            }
-
-            // close file
-            out.close();
-
-        } catch (Throwable t) {
-            // error happened.
-            t.printStackTrace();
-            Toast.makeText(context, "An Error Occurred: "+ t.toString(), Toast.LENGTH_LONG).show();
-
-        }
+        toDoListManeger.writeItemData(listPosition);
     }
 }
