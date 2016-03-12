@@ -58,6 +58,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * When resume make sure adapter is up-to-date.
+     */
+    public void onResume(){
+        super.onResume();
+        listAdapter.notifyDataSetChanged();
+    }
+
+    /**
      * Set Menu.
      */
     @Override

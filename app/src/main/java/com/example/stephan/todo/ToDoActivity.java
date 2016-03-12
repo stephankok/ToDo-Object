@@ -116,6 +116,7 @@ public class ToDoActivity extends AppCompatActivity {
 
             // add item.
             toDoList.pushNewItem(itemToAdd, false);
+            toDoList.updateTime();
 
             // update adapter and listView.
             itemAdapter.notifyDataSetChanged();
@@ -126,7 +127,7 @@ public class ToDoActivity extends AppCompatActivity {
     }
 
     /**
-     * This will delete all items in the list.
+     * This will delete all checked items in the list.
      */
     public void clearTheCurrentList(View view){
 
@@ -143,7 +144,7 @@ public class ToDoActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                         // On yes delete all.
-                        toDoList.deleteAllItems();
+                        toDoList.deleteAllCheckedItems();
 
                         // update.
                         itemAdapter.notifyDataSetChanged();

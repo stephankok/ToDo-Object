@@ -1,7 +1,11 @@
 package com.example.stephan.todo;
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Stephan on 7-3-2016.
@@ -18,7 +22,10 @@ public class ToDoList implements Serializable{
 
     // fields
     private String title;                   // name of the list.
-    private String time;                    // time list added or modified.
+    private String time;                    // last time changes where made.
+    Calendar calender = Calendar.getInstance();  // Get the calender.
+    SimpleDateFormat dateFormat                  // Date format to show user.
+            = new SimpleDateFormat("dd-MMM HH:mm");
     private ArrayList<ToDoItem> toDoItems;  // the items
     private String saveLocation;            // the location where the items of the list are saved.
 
@@ -79,8 +86,8 @@ public class ToDoList implements Serializable{
     /**
      * Change the time of the list.
      */
-    public void setTime(String newTime){
-        time = newTime;
+    public void updateTime(){
+        time = dateFormat.format(calender.getTime());
     }
 
     /**
@@ -116,5 +123,17 @@ public class ToDoList implements Serializable{
      */
     public void deleteAllItems(){
         toDoItems.clear();
+    }
+
+    /**
+     * Delete all checked items.
+     */
+    public void deleteAllCheckedItems(){
+        // start at the end so you wont get out of index
+        for(int i = toDoItems.size() - 1; i >= 0; i--){
+            if(toDoItems.get(i).getItemStatus()){
+                toDoItems.remove(i);
+            }
+        }
     }
 }

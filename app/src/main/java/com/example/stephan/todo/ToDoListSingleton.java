@@ -215,6 +215,10 @@ public class ToDoListSingleton {
      *  First the item name is saved and then the item status.
      */
     public void writeItemData(int position){
+        //When something changed update time
+        toDoLists.get(position).updateTime();
+
+        // now write data.
         try {
             // open/create
             PrintStream out = new PrintStream(context.getApplicationContext()

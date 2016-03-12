@@ -17,8 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * An list adapter for the To Do app created By Stephan Kok.
@@ -34,10 +32,6 @@ import java.util.Calendar;
 public class MyOwnListAdapter extends ArrayAdapter<ToDoList> {
 
     Context context;                    // Activity to display the adapter.
-    Calendar calender                   // Get time.
-            = Calendar.getInstance();
-    SimpleDateFormat dateFormat         // Specific date format.
-            = new SimpleDateFormat("dd-MMM HH:mm");
     ToDoListSingleton toDoLists;
 
 
@@ -174,8 +168,8 @@ public class MyOwnListAdapter extends ArrayAdapter<ToDoList> {
                         toDoLists.getToDoList(position).setName(input.getText().toString());
 
                         // update time
-                        String formattedDate = dateFormat.format(calender.getTime());
-                        toDoLists.getToDoList(position).setTime(formattedDate);
+                        toDoLists.getToDoList(position).updateTime();
+
                         notifyDataSetChanged();
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
