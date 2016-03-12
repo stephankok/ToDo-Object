@@ -20,7 +20,7 @@
     <string name="helpItemDelete">You can delete an item by pressing on:</string>
     <string name="helpItemDelete2">A popup will appear and pres yes to delete it.\n</string>
     <string name="helpItemCheck">You can set an item done by pressing on the checkbox.\n</string>
-    <string name="helpItemClear">You can delete the entire page by pressing \'CLEAR THIS LIST\' at the botten of the screen.\n</string>
+    <string name="helpItemClear">You can delete all checked items by pressing \'Delete checked items\' at the botten of the screen.\n</string>
     <string name="helpItemEdit">You can edit an item by long pressing the text.</string>
     <string name="mainHintEdit">New To Do list</string>
     <string name="itemLoadError">An error happened please try again</string>

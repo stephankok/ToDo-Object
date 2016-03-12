@@ -14,7 +14,7 @@ import java.util.Calendar;
  *
  * Features:
  * String list name.
- * String list time.
+ * String list time the list or items in it are last modified.
  * ArrayList items on the list.
  * String filename where all items are stored.
  */
