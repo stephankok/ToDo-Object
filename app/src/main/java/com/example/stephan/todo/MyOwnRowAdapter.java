@@ -164,6 +164,9 @@ public class MyOwnRowAdapter extends ArrayAdapter<ToDoItem> {
                 final EditText input = new EditText(context);
                 input.setText(toDoList.getItem(position).getName());
 
+                // set cursor at the end.
+                input.setSelection(input.getText().length());
+
                 // put it in AlertDialog.
                 alertEditItemName.setView(input);
 

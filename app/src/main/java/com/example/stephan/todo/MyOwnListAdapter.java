@@ -157,6 +157,9 @@ public class MyOwnListAdapter extends ArrayAdapter<ToDoList> {
                 final EditText input = new EditText(context);
                 input.setText(toDoLists.getToDoList(position).getName());
 
+                // set cursor at the end.
+                input.setSelection(input.getText().length());
+
                 // put it in AlertDialog.
                 alertEditListName.setView(input);
 

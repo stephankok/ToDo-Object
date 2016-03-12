@@ -23,7 +23,6 @@ public class ToDoList implements Serializable{
     // fields
     private String title;                   // name of the list.
     private String time;                    // last time changes where made.
-    Calendar calender = Calendar.getInstance();  // Get the calender.
     SimpleDateFormat dateFormat                  // Date format to show user.
             = new SimpleDateFormat("dd-MMM HH:mm");
     private ArrayList<ToDoItem> toDoItems;  // the items
@@ -87,6 +86,8 @@ public class ToDoList implements Serializable{
      * Change the time of the list.
      */
     public void updateTime(){
+        // get the time right now
+        Calendar calender = Calendar.getInstance();
         time = dateFormat.format(calender.getTime());
     }
 
